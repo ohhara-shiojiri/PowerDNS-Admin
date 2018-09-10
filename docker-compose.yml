@@ -63,8 +63,9 @@ services:
       retries: 5
 
   pdns-server:
-    image: psitrax/powerdns
+    image: ohhara2docker/docker-powerdns
     hostname: ${PDNS_HOST}
+    container_name: pdns-server
     ports:
       - "53:53"
       - "53:53/udp"
@@ -72,6 +73,7 @@ services:
       - default
     command: --api=yes --api-key=${PDNS_API_KEY} --webserver-address=0.0.0.0 --webserver-allow-from=0.0.0.0/0
     environment:
+      - MYSQL_AUTOCONF=true
       - MYSQL_HOST=${PDNS_DB_HOST}
       - MYSQL_USER=${PDNS_DB_USER}
       - MYSQL_PASS=${PDNS_DB_PASSWORD}
@@ -101,6 +103,18 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 10s
       retries: 5
+
+  adminer:
+    image: adminer
+    container_name: mysql-adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      powerdns-admin-mysql:
+        condition: service_healthy
+      pdns-mysql:
+        condition: service_healthy
 
 networks:
   default:
