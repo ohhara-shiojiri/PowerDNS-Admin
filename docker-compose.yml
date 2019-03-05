@@ -63,7 +63,7 @@ services:
       retries: 5
 
   pdns-server:
-    image: ohhara2docker/docker-powerdns
+          image: ohhara2docker/docker-powerdns:4.1.6
     hostname: ${PDNS_HOST}
     container_name: pdns-server
     ports:
